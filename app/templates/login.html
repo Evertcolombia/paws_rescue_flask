@@ -1,0 +1,45 @@
+{% block title%}
+Login Page
+{% endblock %}
+<link rel="stylesheet" href="{{url_for('static', filename='style.css')}}" />
+
+{% block content %}
+<h1>Login</h1>
+
+{% if message %}
+    {{ message }}
+{% endif %}
+
+<!-- url_for('login')
+    will sends directly
+    the form to the login view function--> 
+{% if form %}
+<form action="{{url_for('login_render')}}" method="POST">
+    {{ form.email.label }}: <br>
+    {{ form.email }}
+    {% if form.email.errors %}
+    <br>
+        <ul>
+            {% for error in form.email.errors %}
+            <li id="error">{{ error }}</li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+    <br>
+    {{ form.password.label }}<br>
+    {{ form.password }}
+    {% if form.password.errors %}
+    <br>
+        <ul>
+            {% for error in form.password.errors %}
+            <li id="error">{{ error }}</li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+    <br>
+    {{ form.csrf_token}}
+    {{ form.submit }}
+</form>
+{% endif %}
+<hr>
+{% endblock %}
