@@ -1,5 +1,5 @@
-from flask import Flask, render_template, abort, request
-from .forms import LoginForm
+from flask import Flask, render_template, abort, session, redirect, url_for
+from .forms import LoginForm, SignupForm
 
 app = Flask(__name__)
 
@@ -12,10 +12,10 @@ pets = [
     {"id": 4, "name": "Mr. Furrkins", "age": "5 years", "bio": "Probably napping."},
 ]
 
-users = {
-    "archie.andrews@email.com": "football4life",
-    "veronica.lodge@email.com": "fashiondiva"
-}
+"""Information regarding the Users in the System."""
+users = [
+    {"id": 1, "full_name": "Pet Rescue Team", "email": "team@pawsrescue.co", "password": "adminpass"},
+]
 
 @app.route("/")
 def home():
@@ -33,34 +33,41 @@ def details(pet_id):
         abort(404, description="Custom Error Message")
     return render_template("details.html", pet=pet)
 
+
+@app.route("/signup", methods=["GET", "POST"])
+def signup_render():
+    form = SignupForm()
+    if form.validate_on_submit():
+        new_user = {
+            "id": len(users)+1, 
+            "full_name": form.full_name.data,
+            "email": form.email.data,
+            "password": form.password.data
+        }
+        users.append(new_user)
+        return render_template("signup.html", message="Successfully Sign Up")
+    return render_template("signup.html", form = form)
+
+
 @app.route("/login", methods=["GET", "POST"])
 def login_render():
-    """
-    if request.method == "POST":
-        print(request)
-        email = request.form["email"]
-        password = request.form.get("password")
-        print(email + ' ' + password)
-
-        if (users[email] == password):
-            return render_template("login.html", message ="Successfully Logged In")
-        return render_template("login.html", message ="Incorrect Email or Password")
-    return render_template("login.html")"""
-
-    form = LoginForm ()
-    """
-    if form.is_submitted():
-        print("submitted")
-    if form.validate():
-        print("valid")"""
+    form = LoginForm()
     if form.validate_on_submit():
-        for u_email, u_password in users.items():
-            if (u_email == form.email.data and u_password == form.password.data):
-                return render_template("login.html", message ="Successfully Logged In")
-        return render_template("login.html", form = form, message ="Incorrect Email or Password")
-    elif form.errors:
-        print(form.errors.items())
+        user = next((user for user in users if user["email"] == form.email.data and user["password"] == form.password.data), None)
+        if user is None:
+            return render_template("login.html", form = form, message ="Wrong credentials. Please try again.")
+        else:
+            session['user'] = user
+            return render_template("login.html", message = "Successfully Logged In!")
     return render_template("login.html", form = form)
+
+
+@app.route("/logout")
+def logout():
+    if 'user' in session:
+        session.pop('user')
+    return redirect(url_for('login_render', _external=True))
+    
 
 if __name__ == "__main__":
     app.run(debug=True, host="0.0.0.0", port=3000)

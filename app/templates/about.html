@@ -6,6 +6,18 @@ About Us:
 {% endblock %}
 
 {% block content %}
+    <div>
+        <ul style="list-style-type: none;float: right;font-size: large;">
+            <li style="display:inline"><a href="{{url_for('home')}}">Home</a></li>
+            <li style="display:inline"><a href="{{url_for('about')}}">About</a></li>
+            {% if 'user' in session %}
+            <li style="display:inline"><a href="{{url_for('logout')}}">Log Out</a></li>
+            {% else %}
+            <li style="display:inline"><a href="{{url_for('signup_render')}}">Sign Up</a></li>
+            <li style="display:inline"><a href="{{url_for('login_render')}}">Login</a></li>
+            {% endif %}
+        </ul>
+    </div>
     <p>We are a non-profit organization working as an animal rescue.
         We aim to help you connect with purrfect furbaby for you!
         The animals you find at our website are rescued and rehabilitated animals.

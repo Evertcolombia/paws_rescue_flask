@@ -1,11 +1,24 @@
-{% block title %} Home {% endblock %}
 
+{% block title %} Home {% endblock %}
+<link rel="stylesheet" href="{{url_for('static', filename='style.css')}}" />
 {% block heading%}
 <center>Paws Rescue Center 🐾</center>
 <link rel="stylesheet" href="{{url_for('static', filename='style.css')}}" />  
 {% endblock %}
 
 {% block content %}
+<div>
+  <ul style="list-style-type: none;float: right;font-size: large;">
+      <li style="display:inline"><a href="{{url_for('home')}}">Home</a></li>
+      <li style="display:inline"><a href="{{url_for('about')}}">About</a></li>
+      {% if 'user' in session %}
+      <li style="display:inline"><a href="{{url_for('logout')}}">Log Out</a></li>
+      {% else %}
+      <li style="display:inline"><a href="{{url_for('signup_render')}}">Sign Up</a></li>
+      <li style="display:inline"><a href="{{url_for('login_render')}}">Login</a></li>
+      {% endif%}
+  </ul>
+</div>
   <table>
     <tr>
       <th>Image</th>
@@ -15,7 +28,11 @@
     </tr>
     {% for pet in pets %}
     <tr>
-      <td><img height="100" src="{{url_for('static', filename= pet.id|string+".jpg")}}"></td>
+      <td >
+        <a href="{{url_for('details', pet_id = pet['id'])}}">
+            <img src= "{{url_for('static', filename = pet["id"]|string+".jpg")}}" height="100" >
+        </a>
+        </td>
       <td>{{ pet.name }}</td>
       <td>{{ pet.age }}</td>
       <td>{{ pet.bio }}</td>

@@ -9,6 +9,18 @@ Login Page
 {% if message %}
     {{ message }}
 {% endif %}
+<div>
+    <ul style="list-style-type: none;float: right;font-size: large;">
+        <li style="display:inline"><a href="{{url_for('home')}}">Home</a></li>
+        <li style="display:inline"><a href="{{url_for('about')}}">About</a></li>
+        {% if 'user' in session %}
+        <li style="display:inline"><a href="{{url_for('logout')}}">Log Out</a></li>
+        {% else %}
+        <li style="display:inline"><a href="{{url_for('signup_render')}}">Sign Up</a></li>
+        <li style="display:inline"><a href="{{url_for('login_render')}}">Login</a></li>
+        {% endif %}
+    </ul>
+  </div>
 
 <!-- url_for('login')
     will sends directly
