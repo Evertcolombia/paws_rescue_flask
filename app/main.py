@@ -1,9 +1,34 @@
 from flask import Flask, render_template, abort, session, redirect, url_for
 from .forms import LoginForm, SignupForm
+from flask_sqlalchemy import SQLAlchemy
 
 app = Flask(__name__)
 
 app.config['SECRET_KEY'] = 'dfewfew123213rwdsgert34tgfd1234trgf'
+# Initialize db
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///paws.db'
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+#create db object
+db = SQLAlchemy(app)
+
+
+""" model for pet """
+class pets(db.Model):
+    pet_id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String, unique=True)
+    age = db.Column(db.String)
+    bio = db.Column(db.String)
+
+
+""" model for user """
+class Users(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    full_name = db.Column(db.String)
+    email = db.Column(db.String, primary_key=True, unique=True, nullable=False)
+    password = db.Column( db.String, nullable=False)
+
+
+db.create_all()
 
 pets = [
     {"id": 1, "name": "Nelly", "age": "5 weeks", "bio": "I am a tiny kitten rescued by the good people at Paws Rescue Center. I love squeaky toys and cuddles."},
@@ -11,11 +36,10 @@ pets = [
     {"id": 3, "name": "Basker", "age": "1 year", "bio": "I love barking. But, I love my friends more."},
     {"id": 4, "name": "Mr. Furrkins", "age": "5 years", "bio": "Probably napping."},
 ]
-
-"""Information regarding the Users in the System."""
 users = [
     {"id": 1, "full_name": "Pet Rescue Team", "email": "team@pawsrescue.co", "password": "adminpass"},
 ]
+
 
 @app.route("/")
 def home():
