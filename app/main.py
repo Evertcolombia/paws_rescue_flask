@@ -13,19 +13,21 @@ db = SQLAlchemy(app)
 
 
 """ model for pet """
-class pets(db.Model):
+class Pet(db.Model):
     pet_id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String, unique=True)
     age = db.Column(db.String)
     bio = db.Column(db.String)
+    posted_by = db.Column(db.String, db.ForeignKey('user.id'))
 
 
 """ model for user """
-class Users(db.Model):
+class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     full_name = db.Column(db.String)
     email = db.Column(db.String, primary_key=True, unique=True, nullable=False)
     password = db.Column( db.String, nullable=False)
+    pets = db.relationship('Pet', backref='user')
 
 
 db.create_all()
