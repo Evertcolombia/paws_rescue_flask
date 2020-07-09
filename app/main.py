@@ -1,5 +1,5 @@
 from flask import Flask, render_template, abort, session, redirect, url_for
-from app.forms import LoginForm, SignupForm
+from app.models.forms import LoginForm, SignupForm, EditPetForm
 from flask_sqlalchemy import SQLAlchemy
 
 app = Flask(__name__)
@@ -63,14 +63,40 @@ def home():
 def about():
     return render_template("about.html")
 
-@app.route("/details/<int:pet_id>")
+@app.route("/details/<int:pet_id>", methods=["GET", "POST"])
 def details(pet_id):
     #pet = next((pet for pet in pets if pet["id"] == pet_id), None)
+    form = EditPetForm()
     pet = Pet.query.get(pet_id)
     if pet is None:
         print("none")
         abort(404, description="No Pet was Found with the given ID")
-    return render_template("details.html", pet=pet)
+    if form.validate_on_submit():
+        pet.name = form.name.data
+        pet.age = form.age.data
+        pet.bio = form.bio.data
+        print(pet.__dict__)
+        try:
+            db.session.commit()
+        except Exception as e:
+            print(e)
+            db.session.rollback()
+            return render_template("details.html", pet=pet, form=form, message="A pet with this name already exists!")
+    return render_template("details.html", pet=pet, form = form)
+
+@app.route("/delete/<int:pet_id>")
+def delete_pet(pet_id):
+    pet = Pet.query.get(pet_id)
+    if pet is None:
+        abort(404, description="No Pet was Found with the given ID")
+    db.session.delete(pet)
+    try:
+        db.session.commit()
+    except Exception as e:
+        print(e)
+        db.session.rollback()
+    return redirect(url_for('home', _scheme='https', _external=True))
+
 
 
 @app.route("/signup", methods=["POST", "GET",])
@@ -109,7 +135,7 @@ def login_render():
 def logout():
     if 'user' in session:
         session.pop('user')
-    return redirect(url_for('login_render', _external=True))
+    return redirect(url_for('login_render', _scheme='https', _external=True))
 
 if __name__ == "__main__":
     app.run(debug=True, host="0.0.0.0", port=3000)
