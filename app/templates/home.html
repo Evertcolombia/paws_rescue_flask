@@ -29,10 +29,10 @@
     {% for pet in pets %}
     <tr>
       <td >
-        <a href="{{url_for('details', pet_id = pet['id'])}}">
+        <a href="{{url_for('details', pet_id = pet["id"])}}">
             <img src= "{{url_for('static', filename = pet["id"]|string+".jpg")}}" height="100" >
         </a>
-        </td>
+      </td>
       <td>{{ pet.name }}</td>
       <td>{{ pet.age }}</td>
       <td>{{ pet.bio }}</td>
